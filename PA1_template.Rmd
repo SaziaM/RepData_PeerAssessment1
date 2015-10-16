@@ -8,18 +8,62 @@ output:
 
 ## Loading and preprocessing the data
 
-
+```{r,echo=TRUE}
+data<-read.csv("activity/activity.csv",colClasses="character")
+library(dplyr)
+data[,2]<-as.Date(data[,2],"%Y-%m-%d")
+data[,3]<-as.numeric(data[,3])
+data[,1]<-as.numeric(data[,1])
+data2<-subset(data,!is.na(data[,1]))
+```
 
 ## What is mean total number of steps taken per day?
-
+```{r,echo=TRUE}
+s<-summarise(group_by(data2,date),total=sum(steps))
+hist(s$total)
+summarise(group_by(data2,date),mean=mean(steps))
+summarise(group_by(data2,date),median=median(steps))
+```
 
 
 ## What is the average daily activity pattern?
+```{r,echo=TRUE}
+v<-summarise(group_by(data2,interval),meanInterval=mean(steps))
+plot(v$interval,v$meanInterval,type="l",xlab="Interval",ylab="average steps for interval")
+filter(v,meanInterval==max(v$meanInterval))
+```
 
 
-
-## Imputing missing values
-
-
-
+## Inputing missing values
+```{r,echo=TRUE}
+missing<-subset(data,is.na(data[,1]))
+nrow(missing)
+i<-1
+for(k in 1:8)
+{
+for(j in 1:288)
+{
+missing$steps[i]<-v$meanInterval[j]
+i<-i+1
+}
+}
+Final<-rbind(data2,missing)
+Final<-arrange(Final,date)
+s<-summarise(group_by(Final,date),total=sum(steps))
+hist(s$total)
+summarise(group_by(Final,date),mean=mean(steps))
+summarise(group_by(Final,date),median=median(steps))
+```
+The values estimated above are definitely different from the first part of the assignment. Adding the missing values have increased the y axis level to 35 whereas in the first part of the assignment the y axis level was 25.
+ 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r,echo=TRUE}
+F<-mutate(Final,day=factor("weekday",levels=c("weekday","weekend")))
+for(i in 1:17568)
+{
+if(weekdays(F[i,2])=="Sunday" || weekdays(F[i,2])=="Saturday"){F[i,4]<-"weekend"} else{F[i,4]<-"weekday"}
+}
+v<-summarise(group_by(F,day,interval),meanInterval=mean(steps))
+library(lattice)
+xyplot(meanInterval~interval|day,data=v,type="l",col="blue",layout=c(1,2))
+```
