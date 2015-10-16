@@ -10,6 +10,8 @@ output:
 
 
 ```r
+dir.create("activity")
+a<-unzip("activity.zip",exdir="activity")
 data<-read.csv("activity/activity.csv",colClasses="character")
 library(dplyr)
 ```
