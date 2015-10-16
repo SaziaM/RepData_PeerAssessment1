@@ -203,7 +203,9 @@ hr {
 <body>
 <h2>Loading and preprocessing the data</h2>
 
-<pre><code class="r">data&lt;-read.csv(&quot;activity/activity.csv&quot;,colClasses=&quot;character&quot;)
+<pre><code class="r">dir.create(&quot;activity&quot;)
+a&lt;-unzip(&quot;activity.zip&quot;,exdir=&quot;activity&quot;)
+data&lt;-read.csv(&quot;activity/activity.csv&quot;,colClasses=&quot;character&quot;)
 library(dplyr)
 </code></pre>
 
