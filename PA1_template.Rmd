@@ -9,6 +9,8 @@ output:
 ## Loading and preprocessing the data
 
 ```{r,echo=TRUE}
+dir.create("activity")
+a<-unzip("activity.zip",exdir="activity")
 data<-read.csv("activity/activity.csv",colClasses="character")
 library(dplyr)
 data[,2]<-as.Date(data[,2],"%Y-%m-%d")
